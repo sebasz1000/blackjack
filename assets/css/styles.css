@@ -1,0 +1,29 @@
+html,
+body {
+  margin: 0;
+  background-color: green !important;
+  color: white;
+}
+
+h2 {
+  color: rgb(226, 226, 58);
+}
+
+.title {
+  text-align: center;
+  background-color: black;
+  color: white;
+}
+
+.carta {
+  position: relative;
+  max-width: 150px;
+  height: min-content;
+  left: 100px;
+  margin-left: -75px;
+}
+
+.card-deck {
+  min-height: 200px;
+  padding: 1rem 0;
+}

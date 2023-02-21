@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./assets/css/styles.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <title>Blackjack</title>
+</head>
+<body>
+    <header class="title py-4">
+        BLACKJACK
+    </header>
+    <div class="row mt-2">
+        <div class="col text-center py-4" id="buttons-set">
+            <button class="btn btn-primary" id="new-game">Nuevo Juego</button>
+            <button class="btn btn-primary" id="take-card">Pedir Carta</button>
+            <button class="btn btn-danger" id="player-stop">Detener</button>
+        </div>
+    </div>
+    <!--- jugador -->
+    <div class="row container py-3">
+        <div class="col">
+            <h2>Jugador 1: <small>0</small> </h2>
+            <div class='card-deck' id="player-deck">
+            </div>
+        </div>
+    </div>
+    
+        <!--- PC -->
+        <div class="row container py-3">
+            <div class="col">
+                <h2>PC : <small>0</small> </h2>
+                <div class='card-deck' id="pc-deck">
+                </div>
+            </div>
+        </div>
+    <script src="https://cdn.jsdelivr.net/npm/underscore@1.13.6/underscore-umd-min.js"></script>
+    <script src="./assets/js/juego.js"></script>
+</body>
+</html>

@@ -8,20 +8,36 @@
 (() => {
   "use strict";
 
-  let playerDeck = [];
+  let deck = [];
 
-  const takeCardBtn = document.querySelector("#take-card");
-  const stopBtn = document.querySelector("#player-stop");
-  const newGameBtn = document.querySelector("#new-game");
-  const playerPointsElement = document.querySelectorAll("small")[0];
-  const playerDeckElement = document.querySelector("#player-deck");
-  const pcDeckElement = document.querySelector("#pc-deck");
-  const pcPointsElement = document.querySelectorAll("small")[1];
-  let playerPoints = 0;
-  let pcPoints = 0;
+  const takeCardBtn = document.querySelector("#take-card"),
+    stopBtn = document.querySelector("#player-stop"),
+    newGameBtn = document.querySelector("#new-game"),
+    HTMLPoints = document.querySelectorAll("small"),
+    playerDeckElement = document.querySelector("#player-deck"),
+    pcDeckElement = document.querySelector("#pc-deck");
+  let puntosJugadores;
+
+  // Initializes game
+  const initGame = (playersNumb = 2) => {
+    puntosJugadores = [];
+    for (let i = 0; i < playersNumb; i++) {
+      puntosJugadores.push(0);
+      setEarnedPoints(i, undefined);
+      HTMLPoints[i].innerText = "";
+    }
+    console.log(puntosJugadores);
+
+    pcDeckElement.innerHTML = "";
+    playerDeckElement.innerHTML = "";
+    disableBtns(false);
+    console.clear();
+    deck = createDeck();
+  };
 
   //Creates a new deck
-  const createDeck = (deck) => {
+  const createDeck = () => {
+    deck = [];
     for (let i = 2; i <= 10; i++) {
       appendSymbol(i, deck);
     }
@@ -29,9 +45,7 @@
     const letter = ["A", "J", "K", "Q"];
     letter.forEach((letter) => appendSymbol(letter, deck));
 
-    deck = _.shuffle(deck);
-    console.log(deck);
-    return deck;
+    return _.shuffle(deck);
   };
 
   const appendSymbol = (value, deck) => {
@@ -40,30 +54,35 @@
   };
 
   //User takes a card
-  const takeCard = (deck) => {
+  const takeCard = () => {
     if (deck.length === 0)
       throw new Error("There are no more card on card deck");
 
     //const randomPosition = deck.pop()
     //Double ensures to get a deck random position
-    const randomPosition = Math.floor(Math.random() * deck.length);
+    const randomPosition = Math.floor(Math.random() * (deck.length - 1));
     const card = deck[randomPosition];
-    console.log(`Taken card: ${card}`);
-
-    //remove taken card from deck
+    //removes taken card from deck
     deck.splice(randomPosition, 1);
     return card;
   };
 
+  //Turn 0 = first player,  last array postion = pc turn
+  const setEarnedPoints = (turn, card) => {
+    puntosJugadores[turn] =
+      card != undefined ? puntosJugadores[turn] + getCardvalue(card) : 0;
+    HTMLPoints[turn].innerText = puntosJugadores[turn];
+    return puntosJugadores[turn];
+  };
   //Computer turn
   const pcTurn = (minPointsRequired) => {
-    const deck = createDeck([]);
+    deck = createDeck();
     let card = "";
-    console.log({ deck });
+    let pcPoints = 0;
+
     do {
-      card = takeCard(deck);
-      pcPoints = getCardvalue(card) + pcPoints;
-      pcPointsElement.innerText = pcPoints;
+      card = takeCard();
+      pcPoints = setEarnedPoints(puntosJugadores.length - 1, card);
       pcDeckElement.append(createCardElement(card));
 
       if (minPointsRequired > 21) break;
@@ -78,7 +97,7 @@
         window.alert("TIE!");
       } else if (minPointsRequired < pcPoints && pcPoints <= 21) {
         window.alert("You lose");
-      } else if (minPointsRequired > pcPoint && minPointsRequired <= 21) {
+      } else if (minPointsRequired > pcPoints && minPointsRequired <= 21) {
         window.alert("YOU WIN");
       }
     }, 100);
@@ -110,14 +129,9 @@
     }
   };
 
-  // STARTS!!
-
-  playerDeck = createDeck(playerDeck);
-
   takeCardBtn.addEventListener("click", (e) => {
-    const card = takeCard(playerDeck);
-    playerPoints = getCardvalue(card) + playerPoints;
-    playerPointsElement.innerText = playerPoints;
+    const card = takeCard();
+    const playerPoints = setEarnedPoints(0, card);
     playerDeckElement.append(createCardElement(card));
 
     if (playerPoints > 21) {
@@ -131,19 +145,10 @@
 
   stopBtn.addEventListener("click", (e) => {
     disableBtns(true);
-    pcTurn(playerPoints);
+    pcTurn(puntosJugadores[0]);
   });
 
-  newGameBtn.addEventListener("click", (e) => {
-    disableBtns(false);
-    playerPoints = 0;
-    pcPoints = 0;
-    pcPointsElement.innerText = playerPoints;
-    playerPointsElement.innerText = pcPoints;
-    pcDeckElement.innerHTML = "";
-    playerDeckElement.innerHTML = "";
-    playerDeck = [];
-    console.clear();
-    playerDeck = createDeck(playerDeck);
-  });
+  newGameBtn.addEventListener("click", (e) => initGame());
+
+  initGame();
 })();

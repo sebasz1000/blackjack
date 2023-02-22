@@ -5,7 +5,7 @@
 2S =  Two of Swords (spadas)
 */
 
-(() => {
+const miModulo = (() => {
   "use strict";
 
   let deck = [];
@@ -13,26 +13,23 @@
   const takeCardBtn = document.querySelector("#take-card"),
     stopBtn = document.querySelector("#player-stop"),
     newGameBtn = document.querySelector("#new-game"),
-    HTMLPoints = document.querySelectorAll("small"),
-    playerDeckElement = document.querySelector("#player-deck"),
-    pcDeckElement = document.querySelector("#pc-deck");
+    HTMLPoints = document.querySelectorAll("small");
+  const HTMLCardDecks = document.querySelectorAll(".card-deck");
   let puntosJugadores;
 
   // Initializes game
   const initGame = (playersNumb = 2) => {
+    console.clear();
     puntosJugadores = [];
     for (let i = 0; i < playersNumb; i++) {
       puntosJugadores.push(0);
       setEarnedPoints(i, undefined);
-      HTMLPoints[i].innerText = "";
+      HTMLPoints[i].innerText = puntosJugadores[i];
+      HTMLCardDecks[i].innerHTML = "";
     }
-    console.log(puntosJugadores);
-
-    pcDeckElement.innerHTML = "";
-    playerDeckElement.innerHTML = "";
     disableBtns(false);
-    console.clear();
     deck = createDeck();
+    console.log("*** New game initialized ****");
   };
 
   //Creates a new deck
@@ -79,15 +76,21 @@
     deck = createDeck();
     let card = "";
     let pcPoints = 0;
+    const pcTurn = puntosJugadores.length - 1;
 
     do {
       card = takeCard();
-      pcPoints = setEarnedPoints(puntosJugadores.length - 1, card);
-      pcDeckElement.append(createCardElement(card));
+      pcPoints = setEarnedPoints(pcTurn, card);
+      createCardElement(card, pcTurn);
 
       if (minPointsRequired > 21) break;
     } while (pcPoints <= minPointsRequired && pcPoints <= 21);
 
+    judgeWinner();
+  };
+
+  const judgeWinner = () => {
+    const [minPointsRequired, pcPoints] = puntosJugadores;
     setTimeout(() => {
       if (minPointsRequired > 21) {
         window.alert("You lose");
@@ -102,13 +105,12 @@
       }
     }, 100);
   };
-
   // creates card IMG HTML Element
-  const createCardElement = (card) => {
+  const createCardElement = (card, turn) => {
     const cardElement = document.createElement("img");
     cardElement.classList.add("carta");
     cardElement.src = `assets/cartas/${card}.png`;
-    return cardElement;
+    HTMLCardDecks[turn].append(cardElement);
   };
 
   const getCardvalue = (card) => {
@@ -132,12 +134,13 @@
   takeCardBtn.addEventListener("click", (e) => {
     const card = takeCard();
     const playerPoints = setEarnedPoints(0, card);
-    playerDeckElement.append(createCardElement(card));
+    createCardElement(card, 0);
 
     if (playerPoints > 21) {
       disableBtns(true);
       pcTurn(playerPoints);
     } else if (playerPoints === 21) {
+      window.alert("21! YOU WIN");
       disableBtns(true);
       pcTurn(playerPoints);
     }
@@ -150,5 +153,7 @@
 
   newGameBtn.addEventListener("click", (e) => initGame());
 
-  initGame();
+  return {
+    initGame,
+  };
 })();
